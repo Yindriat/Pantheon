@@ -1,0 +1,37 @@
+graph TD
+    classDef default fill:#fff,stroke:#000,stroke-width:1px;
+    classDef lb fill:#f0f0f0,stroke:#000,stroke-width:2px,stroke-dasharray: 5 5;
+    classDef container fill:#fff,stroke:#000,stroke-width:2px;
+    classDef data fill:#eee,stroke:#000,stroke-width:2px;
+
+    User["Client<br/>"]:::default
+
+    subgraph "Docker"
+        
+        %% Load Balancer
+        LB["Nginx Load Balancer<br/>Port 80"]:::lb
+        
+        %% Compute Layer (Stateless)
+        subgraph "Application Layer"
+            API1["API 1<br/>"]:::container
+            API2["API 2<br/>"]:::container
+        end
+        
+        %% State Layer (Shared)
+        Redis[("Redis Cache<br/>")]:::data
+        DB[("PostgreSQL<br/>pantheon.xlsx")]:::data
+    end
+
+    User -->|HTTP request| LB
+    
+    LB -->|Round Robin| API1
+    LB -->|Round Robin| API2
+    
+    API1 -->|Check| Redis
+    API1 -.->|Query| DB
+
+    API2 -->|Check| Redis
+    API2 -.->|Query| DB
+
+    Redis -.->|Hit| API1
+    Redis -.->|Hit| API2
