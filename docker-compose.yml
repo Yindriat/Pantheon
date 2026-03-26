@@ -11,7 +11,7 @@ services:
   api:
     build: ./app
     deploy:
-      replicas: 2
+      replicas: 4
     environment:
       - REDIS_HOST=redis
       - DB_HOST=db
@@ -24,13 +24,15 @@ services:
 
   redis:
     image: redis:alpine
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru", "--maxclients", "10000", "--tcp-backlog", "511"]
 
   db:
     build: ./init_db
-    command: ["postgres", "-c", "max_connections=500"]
+    command: ["postgres", "-c", "max_connections=2000", "-c", "shared_buffers=256MB"]
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
     volumes:
       - ./pantheon.xlsx:/docker-entrypoint-initdb.d/pantheon.xlsx
+

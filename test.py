@@ -5,12 +5,12 @@ import aiohttp
 
 URL_TEMPLATE = "http://localhost/people/{}"
 
-TOTAL_REQUESTS = 10000
-CONCURRENCY = 1000
+TOTAL_REQUESTS = 500000
+CONCURRENCY = 5000
 
 RANKING_MIN = 1
 RANKING_MAX = 11341
-TIMEOUT_SECONDS = 10
+TIMEOUT_SECONDS = 30
 
 
 def percentile(sorted_values, p):
